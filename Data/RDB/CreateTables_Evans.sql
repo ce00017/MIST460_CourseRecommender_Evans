@@ -162,6 +162,7 @@ CREATE TABLE RegistrationSection (
     LetterGrade NCHAR(2) NULL,
     RegistrationID INT NOT NULL,
     SectionID INT NOT NULL,
+    StudentComments NVARCHAR(MAX) NULL,
     CONSTRAINT FK_RegistrationSection_Registration FOREIGN KEY (RegistrationID)
         REFERENCES Registration(RegistrationID),
     CONSTRAINT FK_RegistrationSection_Section FOREIGN KEY (SectionID)
