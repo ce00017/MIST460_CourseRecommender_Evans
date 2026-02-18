@@ -95,19 +95,21 @@ CREATE TABLE Course (
 );
 GO
 
-
+-- do we need to add a not null constraint? its possible that a course has no prerequisites.
 CREATE table CoursePrerequisite (
     CoursePrerequisiteID int Identity(1,1) NOT NULL
         CONSTRAINT PK_CoursePrerequisite PRIMARY KEY,
-    CourseID int NOT NULL
+    CourseID int 
         CONSTRAINT FK_CoursePrerequisite_CourseID FOREIGN KEY (CourseID)
         REFERENCES Course(CourseID),
-    PrerequisiteCourseID int NOT NULL
+    PrerequisiteCourseID int 
         CONSTRAINT FK_CoursePrerequisite_PrerequisiteCourseID FOREIGN KEY (PrerequisiteCourseID)
         REFERENCES Course(CourseID),
     MinimumGrade decimal(3,2) NOT NULL
         CONSTRAINT CK_CoursePrerequisite_MinGrade CHECK (MinimumGrade >= 2.0 AND MinimumGrade <= 4.0),
-        CONSTRAINT CK_Not_Same_Course CHECK (CourseID <> PrerequisiteCourseID)
+        CONSTRAINT CK_Not_Same_Course CHECK (CourseID <> PrerequisiteCourseID),
+        CONSTRAINT UQ_CoursePrerequisite UNIQUE (CourseID, PrerequisiteCourseID)
+
 ); 
 GO
 
