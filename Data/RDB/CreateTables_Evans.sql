@@ -146,13 +146,10 @@ CREATE TABLE Registration (
     RegistrationID INT IDENTITY(1,1) 
     CONSTRAINT PK_Registration PRIMARY KEY,
     StudentID INT NOT NULL,
-    SectionID INT NOT NULL,
     YearRegistered INT NOT NULL,
     SemesterRegistered NVARCHAR(12) NOT NULL, -- 'Spring','Summer','Fall','Winter'
     CONSTRAINT FK_Registration_Student FOREIGN KEY (StudentID)
-        REFERENCES Student(StudentID),
-    CONSTRAINT FK_Registration_Section FOREIGN KEY (SectionID)
-        REFERENCES Section(SectionID)
+        REFERENCES Student(StudentID)
 );
 GO
 
