@@ -95,7 +95,7 @@ CREATE TABLE Course (
 );
 GO
 
---This isn't correct yet, I'm going to review the video again, if your seeing this it means I haven't finished it yet. 
+
 CREATE table CoursePrerequisite (
     CoursePrerequisiteID int Identity(1,1) NOT NULL
         CONSTRAINT PK_CoursePrerequisite PRIMARY KEY,
