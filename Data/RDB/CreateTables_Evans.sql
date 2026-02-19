@@ -149,7 +149,9 @@ CREATE TABLE Registration (
     YearRegistered INT NOT NULL,
     SemesterRegistered NVARCHAR(12) NOT NULL, -- 'Spring','Summer','Fall','Winter'
     CONSTRAINT FK_Registration_Student FOREIGN KEY (StudentID)
-        REFERENCES Student(StudentID)
+        REFERENCES Student(StudentID),
+    
+    CONSTRAINT UQ_Registration_StudentSemester UNIQUE (StudentID, YearRegistered, SemesterRegistered)
 );
 GO
 
