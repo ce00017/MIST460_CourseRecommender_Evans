@@ -1,4 +1,4 @@
-CREATE PROCEDURE GetSectionsInSemesterAndYear
+CREATE OR ALTER PROCEDURE GetSectionsInSemesterAndYear
     @SectionSemester NVARCHAR(10) = NULL,
     @SectionYear INT = NULL,
     @CourseID VARCHAR(10) = NULL
@@ -13,7 +13,9 @@ SELECT s.SectionNumber, s.InstructorID, s.SectionSemester, s.SectionYear, s.Rema
 END;
 GO
 
-CREATE PROCEDURE GetCoursePrerequisites
+--EXEC GetSectionsInSemesterAndYear @SectionSemester = 'Fall', @SectionYear = 2024;
+
+CREATE OR ALTER PROCEDURE GetCoursePrerequisites
     @CourseID INT = NULL
     AS
     BEGIN
@@ -22,3 +24,5 @@ SELECT p.PrerequisiteID, c.Title FROM CoursePrerequisite p
     WHERE (@CourseID IS NULL OR p.CourseID = @CourseID);
 END;
 GO
+
+--EXEC GetCoursePrerequisites @CourseID = 1;
