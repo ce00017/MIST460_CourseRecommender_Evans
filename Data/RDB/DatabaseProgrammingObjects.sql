@@ -7,7 +7,8 @@ SELECT s.SectionNumber, s.InstructorID, s.SectionSemester, s.SectionYear, s.Rema
     c.CourseID, c.Title FROM Section s
     JOIN Course c ON s.CourseID = c.CourseID
     WHERE (@SubjectCode IS NULL OR c.SubjectCode = @SubjectCode)
-    AND (@CourseNumber IS NULL OR c.CourseNumber = @CourseNumber);
+    AND (@CourseNumber IS NULL OR c.CourseNumber = @CourseNumber)
+    AND SectionYear >= YEAR(GETDATE());
 END;
 GO
 
