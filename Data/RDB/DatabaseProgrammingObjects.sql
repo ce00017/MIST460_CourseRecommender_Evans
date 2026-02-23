@@ -9,7 +9,7 @@ SELECT s.SectionNumber, s.InstructorID, s.SectionSemester, s.SectionYear, s.Rema
 GO
 
 DECLARE @CourseID INT = NULL;
-SELECT p.PrerequisiteCourseID, c.Title FROM CoursePrerequisite p
-    JOIN Course c ON p.PrerequisiteCourseID = c.CourseID
+SELECT p.PrerequisiteID, c.Title FROM CoursePrerequisite p
+    JOIN Course c ON p.PrerequisiteID = c.CourseID
     WHERE (@CourseID IS NULL OR p.CourseID = @CourseID);
 GO
