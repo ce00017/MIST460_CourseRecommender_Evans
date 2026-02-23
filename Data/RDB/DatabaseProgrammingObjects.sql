@@ -1,19 +1,17 @@
 CREATE OR ALTER PROCEDURE GetSectionsInSemesterAndYear
-    @SectionSemester NVARCHAR(10) = NULL,
-    @SectionYear INT = NULL,
-    @CourseID VARCHAR(10) = NULL
+    @SubjectCode VARCHAR(30) = NULL,
+    @CourseNumber VARCHAR(30) = NULL
     AS
     BEGIN
 SELECT s.SectionNumber, s.InstructorID, s.SectionSemester, s.SectionYear, s.RemainingOpenings, s.SectionAverageRating,
     c.CourseID, c.Title FROM Section s
     JOIN Course c ON s.CourseID = c.CourseID
-    WHERE (@SectionSemester IS NULL OR s.SectionSemester = @SectionSemester)
-    AND (@SectionYear IS NULL OR s.SectionYear = @SectionYear);
-
+    WHERE (@SubjectCode IS NULL OR c.SubjectCode = @SubjectCode)
+    AND (@CourseNumber IS NULL OR c.CourseNumber = @CourseNumber);
 END;
 GO
 
---EXEC GetSectionsInSemesterAndYear @SectionSemester = 'Fall', @SectionYear = 2024;
+--EXEC GetSectionsInSemesterAndYear @SubjectCode = 'MIST', @CourseNumber = '460';
 
 CREATE OR ALTER PROCEDURE GetCoursePrerequisites
     @CourseID INT = NULL
