@@ -17,6 +17,12 @@ GO
 
 --EXEC GetSectionsInSemesterAndYear @SubjectCode = 'MIST', @CourseNumber = '460';
 
+
+
+
+
+
+
 CREATE OR ALTER PROCEDURE GetCoursePrerequisites
     @SubjectCode  VARCHAR(30) = NULL,
     @CourseNumber VARCHAR(30) = NULL
@@ -44,57 +50,113 @@ GO
 
 
 
+
+
+
+
+
+Create or alter function fnGetCoursePrerequisites
+(
+    @SubjectCode VARCHAR(30) = NULL,
+    @CourseNumber VARCHAR(30)
+)
+returns @Prerequisites TABLE
+(
+    Title nvarchar(100),
+    SubjectCode nvarchar(10),
+    CourseNumber nvarchar(10),
+    MinGradeRequired nchar(2)
+)
+AS
+BEGIN
+INSERT into @Prerequisites
+(Title, SubjectCode, CourseNumber, MinGradeRequired)
+SELECT prereq.Title, prereq.SubjectCode, prereq.CourseNumber, cp.MinGradeRequired
+FROM CoursePrerequisite CP
+JOIN Course MainCourse ON CP.CourseID = MainCourse.CourseID
+JOIN Course prereq ON CP.PrerequisiteID = prereq.CourseID
+WHERE MainCourse.SubjectCode = IsNull(@SubjectCode, MainCourse.SubjectCode)
+  AND MainCourse.CourseNumber = @CourseNumber;
+
+return;
+END;
+GO
+
+-- select * from fnGetCoursePrerequisites('MIST', '460');
+
+
+
+
+
+
+
+
+Create or alter function fnGetStudentCourseHistory
+(
+    @StudentID INT
+)
+returns @CourseHistory TABLE
+(
+    SubjectCode nvarchar(10),
+    CourseNumber nvarchar(10),
+    Grade nchar(2)
+)
+AS
+BEGIN
+INSERT into @CourseHistory
+(SubjectCode, CourseNumber, Grade)
+SELECT c.SubjectCode, c.CourseNumber, rs.LetterGrade
+FROM Registration r
+JOIN RegistrationSection rs ON r.RegistrationID = rs.RegistrationID
+JOIN Section s ON rs.SectionID = s.SectionID
+JOIN Course c ON s.CourseID = c.CourseID
+WHERE r.StudentID = @StudentID
+
+return;
+END;
+GO
+-- select * from fnGetStudentCourseHistory(1);
+
+
+create or alter function fnGradePointsFromLetterGrade
+(
+    @LetterGrade nchar(2)
+)
+RETURNS int
+as 
+BEGIN
+    declare @GradePoints int;
+    set @GradePoints = case @LetterGrade
+        when 'A' then 4
+        when 'B' then 3
+        when 'C' then 2
+        when 'D' then 1
+        else 0
+    end
+
+RETURN @GradePoints;
+END;
+
+go
+
+
+
+
+
 --Has the student taken the prerequisite courses for a given course?
 
-CREATE OR ALTER PROCEDURE CheckStudentPrerequisites --This checks if the provided info actually relates to a course, then checks if the student ever took the class with a passing grade.
+CREATE OR ALTER PROCEDURE CheckStudentPrerequisites
     @StudentID    INT,
     @SubjectCode  VARCHAR(30),
     @CourseNumber VARCHAR(30)
 AS
 BEGIN
-    IF @StudentID IS NULL OR @SubjectCode IS NULL OR @CourseNumber IS NULL
-    BEGIN
-        RAISERROR('All parameters must be provided.', 16, 1); --Again AI was used for this edge case.
-        RETURN;
-    END;
-
-    IF NOT EXISTS (SELECT 1 FROM Course WHERE SubjectCode = @SubjectCode AND CourseNumber = @CourseNumber)
-    BEGIN
-        RAISERROR('Course not found.', 16, 1); --Again AI was used for this edge case.
-        RETURN;
-    END;
-
-    IF NOT EXISTS (SELECT 1 FROM Student WHERE StudentID = @StudentID)
-    BEGIN
-        RAISERROR('Student not found.', 16, 1);
-        RETURN;
-    END;
-
-    SELECT
-        prereq.SubjectCode,
-        prereq.CourseNumber,
-        prereq.Title,
-        cp.MinGradeRequired,
-        CASE 
-            WHEN EXISTS (
-                SELECT 1
-                FROM Section s
-                JOIN RegistrationSection rs ON rs.SectionID     = s.SectionID
-                JOIN Registration r         ON r.RegistrationID = rs.RegistrationID
-                WHERE s.CourseID              = prereq.CourseID
-                  AND r.StudentID             = @StudentID
-                  AND rs.EnrollmentStatus     = 'Completed'
-                  AND rs.LetterGrade          IS NOT NULL
-                  AND rs.LetterGrade          NOT IN ('F', 'W')
-                  AND rs.LetterGrade          <= cp.MinGradeRequired
-            ) THEN 'Met'
-            ELSE 'Not Met'
-        END AS PrerequisiteStatus
-    FROM CoursePrerequisite cp
-        JOIN Course c      ON cp.CourseID       = c.CourseID
-        JOIN Course prereq ON cp.PrerequisiteID = prereq.CourseID
-    WHERE c.SubjectCode  = @SubjectCode
-      AND c.CourseNumber = @CourseNumber;
+    SELECT * FROM fnGetCoursePrerequisites(@SubjectCode, @CourseNumber) AS Prerequisites
+    left join fnGetStudentCourseHistory(@StudentID) AS History
+    ON Prerequisites.SubjectCode = History.SubjectCode
+    AND Prerequisites.CourseNumber = History.CourseNumber
+    AND dbo.fnGradePointsFromLetterGrade(History.Grade) 
+            >= dbo.fnGradePointsFromLetterGrade(Prerequisites.MinGradeRequired);
 END;
 GO
 
