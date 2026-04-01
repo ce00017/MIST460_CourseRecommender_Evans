@@ -321,7 +321,8 @@ BEGIN
 -- Subqueries - IN, NOT IN, EXISTS, NOT EXISTS
 -- IN non-correlated subquery - returns all the prerequisites for the course
 -- EXIST correlated subquery - checks if there is a record in the student's course history that matches the prerequisite and has a grade that meets the minimum requirement
-    
+-- NOT EXIST correlated subquery - checks if there is no record in the student's course history that matches the prerequisite and has a grade that meets the minimum requirement    
+
     SELECT Prerequisites.SubjectCode, Prerequisites.CourseNumber, 
         Prerequisites.MinGradeRequired as 'MinimumGradeRequired', 
         IsNull(CAST(History.Grade AS NVARCHAR(20)), 'Not Completed') as 'StudentGrade'
