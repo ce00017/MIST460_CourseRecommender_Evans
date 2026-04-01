@@ -15,7 +15,7 @@ def get_course_prerequisites(
     results = [
         {
             "MainCourseTitle": row.MainCourseTitle,
-            "MainSubjectCode": row.MainSubjectCode,
+            "MainCourseSubjectCode": row.MainCourseSubjectCode,
             "MainCourseNumber": row.MainCourseNumber,
             "PrerequisiteTitle": row.PrerequisiteTitle,
             "PrerequisiteSubjectCode": row.PrerequisiteSubjectCode,

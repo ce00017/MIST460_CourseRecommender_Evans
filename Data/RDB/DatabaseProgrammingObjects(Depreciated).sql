@@ -21,12 +21,6 @@ IF OBJECT_ID('fnGradePointsFromLetterGrade') is NOT NULL
 IF OBJECT_ID('trgDecreaseSectionSeats') is NOT NULL
     DROP TRIGGER trgDecreaseSectionSeats;
 
-IF OBJECT_ID('procValidateUser') is NOT NULL
-    DROP PROCEDURE procValidateUser;
-
-IF OBJECT_ID('procHasStudentMetPrerequisitesForCourse') is NOT NULL
-    DROP PROCEDURE procHasStudentMetPrerequisitesForCourse;
-
 
 -- Need days / times for sections, Location
 
@@ -119,16 +113,14 @@ BEGIN
         RETURN;
     END;
     SELECT
-        MainCourse.Title 'MainCourseTitle', MainCourse.SubjectCode 'MainCourseSubjectCode', MainCourse.CourseNumber 'MainCourseNumber',
-        prereq.Title 'PrerequisiteTitle', prereq.SubjectCode 'PrerequisiteSubjectCode', prereq.CourseNumber 'PrerequisiteCourseNumber', 
-        CP.MinGradeRequired 'MinGradeRequired'
+        MainCourse.Title 'MainCourseTitle', MainCourse.SubjectCode 'MainSubjectCode', MainCourse.CourseNumber 'MainCourseNumber', prereq.Title 'PrerequisiteTitle', prereq.SubjectCode 'PrerequisiteSubjectCode', prereq.CourseNumber 'PrerequisiteCourseNumber', CP.MinGradeRequired
             FROM CoursePrerequisite CP
         JOIN Course MainCourse ON CP.CourseID = MainCourse.CourseID
         JOIN Course prereq ON CP.PrerequisiteID = prereq.CourseID
     WHERE
         --(@SubjectCode IS NULL OR c.SubjectCode = @SubjectCode)
         MainCourse.SubjectCode = IsNull(@SubjectCode, MainCourse.SubjectCode)
-        AND MainCourse.CourseNumber = IsNull(@CourseNumber, MainCourse.CourseNumber);
+        AND MainCourse.CourseNumber = @CourseNumber;
 END;
 
 --EXEC procGetCoursePrerequisites @SubjectCode = 'MIST', @CourseNumber = '460';
@@ -269,7 +261,7 @@ END;
 
 go
 
-create or alter procedure procEnrollStudentInSection
+create procedure procEnrollStudentInSection
 (
     @RegistrationID int,
     @SectionID int
@@ -318,17 +310,8 @@ BEGIN
             >= dbo.fnGradePointsFromLetterGrade(Prerequisites.MinGradeRequired);
 */
 
--- Subqueries - IN, NOT IN, EXISTS, NOT EXISTS
--- IN non-correlated subquery - returns all the prerequisites for the course
--- EXIST correlated subquery - checks if there is a record in the student's course history that matches the prerequisite and has a grade that meets the minimum requirement
-    
-    SELECT Prerequisites.SubjectCode, Prerequisites.CourseNumber, 
-        Prerequisites.MinGradeRequired as 'MinimumGradeRequired', 
-        IsNull(CAST(History.Grade AS NVARCHAR(20)), 'Not Completed') as 'StudentGrade'
+    SELECT Prerequisites.SubjectCode, Prerequisites.CourseNumber, Prerequisites.MinGradeRequired -- History.Grade
     FROM fnGetCoursePrerequisites(@SubjectCode, @CourseNumber) AS Prerequisites
-        LEFT JOIN fnGetStudentCourseHistory(@StudentID) AS History
-            ON Prerequisites.SubjectCode = History.SubjectCode
-            AND Prerequisites.CourseNumber = History.CourseNumber
     WHERE NOT EXISTS (
         SELECT 1
         FROM fnGetStudentCourseHistory(@StudentID) AS History
@@ -342,28 +325,6 @@ BEGIN
 END;
 GO
 
---EXEC procHasStudentMetPrerequisitesForCourse @StudentID = 2, @SubjectCode = 'MIST', @CourseNumber = '460';
---EXEC procHasStudentMetPrerequisitesForCourse @StudentID = 1, @SubjectCode = 'MIST', @CourseNumber = '460';
 --EXEC procHasStudentMetPrerequisitesForCourse @StudentID = 3, @SubjectCode = 'MIST', @CourseNumber = '460';
 
 go
-
-create or alter procedure procValidateUser
-(@username nvarchar(320), @password nvarchar(100))
-as
-begin
-	select AppUserID, Firstname + ' ' + Lastname as Fullname
-	from AppUser
-	where Email = @username and
-		PasswordHash = CONVERT(VARBINARY(64), @password, 1)
-end;
-
-/*
-execute procValidateUser
-@username = 'mjordan@wvu.edu', 
-@password = '0x01';
-
-select AppUserID, Firstname, LastName, Email, PasswordHash
-from AppUser
-*/
-
