@@ -5,7 +5,7 @@ def has_student_met_prerequisites_for_course_ui():
 
     st.header("Has Student Met Prerequisites for Course")
 
-    student_id = st.text_input("StudentID", value=st.session_state.app_user_id, disabled=True)
+    student_id = st.text_input("StudentID", ) #value=st.session_state.app_user_id, disabled=True)
     subject_code = st.text_input("Subject Code (e.g., MIST)")
     course_number = st.text_input("Course Number (e.g., 460)")
 
