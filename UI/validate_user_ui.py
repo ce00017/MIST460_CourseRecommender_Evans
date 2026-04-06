@@ -5,24 +5,20 @@ def validate_user_ui():
 
     st.header("Validate User")
 
-    username = st.text_input("Username/Email")
+    email = st.text_input("Username/Email")
     password = st.text_input("Password", type="password")
 
     if st.button("Validate User"):
         input_params = {}
-        if username.strip():
+        if not email.strip():
             st.error("Username/Email is required.")
         else:
-            input_params["username"] = username.strip()
-        if password.strip():
+            input_params["email"] = email.strip()
+        if not password.strip():
             st.error("Password is required.")
         else:
             input_params["password"] = password.strip()
 
-        input_params = {
-            "username": username,
-            "password": password
-        }
 
         df = fetch_data("validate_user/", input_params)
 

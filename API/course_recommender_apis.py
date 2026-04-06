@@ -17,7 +17,7 @@ def get_course_prerequisites_endpoint(subject_code: str = None, course_number: s
     return get_course_prerequisites(subject_code, course_number)
 
 @app.get("/validate_user")
-def validate_user_endpoint(email: str = None, password: str = None):
+def validate_user_endpoint(email: str, password: str):
     return validate_user(email, password)
 
 @app.get("/has_student_met_prerequisites_for_course")

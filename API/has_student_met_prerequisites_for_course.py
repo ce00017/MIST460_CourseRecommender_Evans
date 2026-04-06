@@ -1,9 +1,9 @@
 from get_db_connection import get_db_connection
 
 def has_student_met_prerequisites_for_course(
-    student_id: int = None,
-    subject_code: str = None,
-    course_number: str = None
+    student_id: int,
+    subject_code: str,
+    course_number: str
 ):
     conn = get_db_connection()
     cursor = conn.cursor()
