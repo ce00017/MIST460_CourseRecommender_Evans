@@ -158,7 +158,8 @@ VALUES
  (N'Robert', N'Brown', N'rbrown@wvu.edu', 0x01, N'Student'),
  (N'Olivia', N'Davis', N'odavis@wvu.edu', 0x01, N'Student'),
  (N'Liam', N'Wilson', N'lwilson@wvu.edu', 0x01, N'Student'),
- (N'Zoe', N'Martinez', N'zmartinez@wvu.edu', 0x01, N'Student');
+ (N'Zoe', N'Martinez', N'zmartinez@wvu.edu', 0x01, N'Student'),
+ (N'Cannon', N'Evans', N'ce@wvu.edu', 0x01, N'Student');
 
 -- Alumni (10)
 INSERT INTO AppUser (Firstname, LastName, Email, PasswordHash, UserRole)
@@ -173,7 +174,6 @@ VALUES
  (N'Helen', N'Zhao', N'hzhao@alum.wvu.edu',   0x03, N'Alum'),
  (N'Ian', N'Clark', N'iclark@alum.wvu.edu',  0x03, N'Alum'),
  (N'Julia', N'Rossi', N'jrossi@alum.wvu.edu',  0x03, N'Alum');
-
 ------------------------------------------------------------
 -- Subtype rows
 ------------------------------------------------------------
@@ -191,22 +191,23 @@ values
 (9, 60, N'Fall 2027', 3.7, 3.8),
 (10,30,N'Spring 2027',3.5,3.6),
 (11,15,N'Fall 2028',3.2,3.4),
-(12,45,N'Fall 2027',3.6,3.7);
+(12,45,N'Fall 2027',3.6,3.7),
+(13, 120, N'Spring 2026', 3.9, 4.0);
 
 
 -- Alumni
 INSERT INTO Alum (AlumID, GraduationSemesterYear)
 values
-(13, 'spring 2010'),
-(14, 'fall 2012'),
-(15, 'spring 2015'),
-(16, 'fall 2018'),
-(17, 'spring 2020'),
-(18, 'fall 2021'),
-(19, 'spring 2023'),
-(20, 'fall 2024'),
-(21, 'spring 2025'),
-(22, 'fall 2025');
+(14, 'spring 2010'),
+(15, 'fall 2012'),
+(16, 'spring 2015'),
+(17, 'fall 2018'),
+(18, 'spring 2020'),
+(19, 'fall 2021'),
+(20, 'spring 2023'),
+(21, 'fall 2024'),
+(22, 'spring 2025'),
+(23, 'fall 2025');
 
 go
 
@@ -333,7 +334,8 @@ values
 (2, '2025-01-01', N'Spring', 2025),
 (2, '2025-08-01', N'Fall', 2025),
 (3, '2025-01-01', N'Spring', 2025),
-(3, '2025-08-01', N'Fall', 2025);
+(3, '2025-08-01', N'Fall', 2025),
+(13, '2026-01-01', N'Fall', 2026);
 -- select * from Registration;
 -- select * from Course;
 -- select SectionID, SubjectCode, CourseNumber from Section S join Course C on S.CourseID = C.CourseID;

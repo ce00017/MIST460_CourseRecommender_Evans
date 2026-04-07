@@ -276,13 +276,40 @@ create or alter procedure procEnrollStudentInSection
 )
 as
 begin
-    insert into RegistrationSection (RegistrationID, SectionID)
-    values (@RegistrationID, @SectionID); -- this should trigger the decrease in RemainingOpenings for SectionID = 1
-end;
--- EXEC procEnrollStudentInSection @RegistrationID = 1, @SectionID = 1;
+SET NOCOUNT ON; -- prevents the message that shows the number of rows affected by the insert statement, which can interfere with the trigger execution.
+    insert into RegistrationSection (RegistrationID, SectionID, EnrollmentStatus, LetterGrade)
+    values (@RegistrationID, @SectionID, 'Enrolled', NULL); -- this should trigger the decrease in RemainingOpenings for SectionID = 1
 
-select *
-from Registration;
+    select EnrollmentStatus, LastUpdate
+    from RegistrationSection
+    where RegistrationID = @RegistrationID and SectionID = @SectionID;
+end;
+-- EXEC procEnrollStudentInSection @RegistrationID = 15, @SectionID = 1;
+
+
+GO
+
+
+
+
+
+create or alter procedure procRegisterStudent
+(
+    @StudentID int,
+    @RegistrationSemester nvarchar(12),
+    @RegistrationYear int
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    insert into Registration (StudentID, RegistrationSemester, RegistrationYear)
+    values (@StudentID, @RegistrationSemester, @RegistrationYear);
+
+    select RegistrationID, RegistrationDate from Registration
+    WHERE RegistrationID = SCOPE_IDENTITY(); -- returns the last identity value inserted into an identity column in the same scope. This is useful for getting the RegistrationID of the newly created registration record, which can then be used to enroll the student in sections.
+END;
+
+-- EXEC procRegisterStudent @StudentID = 3, @RegistrationSemester = 'Spring', @RegistrationYear = 2026;
 
 -- 1. Create a stored procedure to register a student (procRegisterStudent)
 -- 2. Insert Registration record for student 3 spring 2026

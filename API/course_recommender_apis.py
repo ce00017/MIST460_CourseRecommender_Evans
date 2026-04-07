@@ -5,6 +5,8 @@ from get_course_sections_for_specified_course import get_course_sections_for_spe
 from get_course_prerequisites import get_course_prerequisites
 from validate_user import validate_user
 from has_student_met_prerequisites_for_course import has_student_met_prerequisites_for_course
+from register_student import register_student
+from enroll_student_in_section import enroll_student_in_section
 
 app = FastAPI()
 
@@ -23,3 +25,11 @@ def validate_user_endpoint(email: str, password: str):
 @app.get("/has_student_met_prerequisites_for_course")
 def has_student_met_prerequisites_for_course_endpoint(student_id: int = None, subject_code: str = None, course_number: str = None):
     return has_student_met_prerequisites_for_course(student_id, subject_code, course_number)
+
+@app.get("/register_student")
+def register_student_endpoint(student_id: int, registration_semester: str, registration_year: int):
+    return register_student(student_id, registration_semester, registration_year)
+
+@app.get("/enroll_student_in_section")
+def enroll_student_in_section_endpoint(registration_id: str, section_id: str):
+    return enroll_student_in_section(registration_id, section_id)
