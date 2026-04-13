@@ -8,6 +8,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'API/**'
+      - 'requirements.txt'
   workflow_dispatch:
 
 jobs:
@@ -38,8 +41,9 @@ jobs:
         with:
           name: python-app
           path: |
-            .
-            !antenv/
+            API/
+            requirements.txt
+            !.venv/
 
       # 🚫 Opting Out of Oryx Build
       # If you prefer to disable the Oryx build process during deployment, follow these steps:
