@@ -1,4 +1,5 @@
 from get_db_connection import get_db_connection
+import pymssql
 
 def has_student_met_prerequisites_for_course(
     student_id: int,
@@ -6,7 +7,7 @@ def has_student_met_prerequisites_for_course(
     course_number: str
 ):
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(as_dict=True)
     cursor.execute("{CALL procHasStudentMetPrerequisitesForCourse(?, ?, ?)}", (student_id, subject_code, course_number))
     rows = cursor.fetchall()
     conn.close()

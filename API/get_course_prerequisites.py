@@ -1,12 +1,13 @@
 from get_db_connection import get_db_connection
+import pymssql
 
 def get_course_prerequisites(
     subject_code: str = None,
     course_number: str = None
 ):
     conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("{CALL procGetCoursePrerequisites(?, ?)}", (subject_code, course_number))
+    cursor = conn.cursor(as_dict=True)
+    cursor.execute("EXEC procGetCoursePrerequisites %s, %s", (subject_code, course_number))
     rows = cursor.fetchall()
     conn.close()
     
@@ -14,13 +15,13 @@ def get_course_prerequisites(
     #convert rows to list of dicts
     results = [
         {
-            "MainCourseTitle": row.MainCourseTitle,
-            "MainCourseSubjectCode": row.MainCourseSubjectCode,
-            "MainCourseNumber": row.MainCourseNumber,
-            "PrerequisiteTitle": row.PrerequisiteTitle,
-            "PrerequisiteSubjectCode": row.PrerequisiteSubjectCode,
-            "PrerequisiteCourseNumber": row.PrerequisiteCourseNumber,
-            "MinGradeRequired": row.MinGradeRequired
+            "MainCourseTitle": row["MainCourseTitle"],
+            "MainCourseSubjectCode": row["MainCourseSubjectCode"],
+            "MainCourseNumber": row["MainCourseNumber"],
+            "PrerequisiteTitle": row["PrerequisiteTitle"],
+            "PrerequisiteSubjectCode": row["PrerequisiteSubjectCode"],
+            "PrerequisiteCourseNumber": row["PrerequisiteCourseNumber"],
+            "MinGradeRequired": row["MinGradeRequired"]
         }
         for row in rows
     ]
