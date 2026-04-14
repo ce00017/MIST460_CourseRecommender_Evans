@@ -26,4 +26,4 @@ def get_db_connection():
                 
 
     #return pyodbc.connect(connection_string)
-    return pymssql.connect(server=server, user=user, password=password, database=database, port=1433)
+    return pymssql.connect(server=server, user=user, password=password, database=database, port=1433, tds_version='7.4')
