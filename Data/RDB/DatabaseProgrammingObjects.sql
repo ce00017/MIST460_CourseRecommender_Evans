@@ -27,6 +27,47 @@ IF OBJECT_ID('procValidateUser') is NOT NULL
 IF OBJECT_ID('procHasStudentMetPrerequisitesForCourse') is NOT NULL
     DROP PROCEDURE procHasStudentMetPrerequisitesForCourse;
 
+IF OBJECT_ID('procEnrollStudentInSection') is NOT NULL
+    DROP PROCEDURE procEnrollStudentInSection;
+
+IF OBJECT_ID('procRegisterStudent') is NOT NULL
+    DROP PROCEDURE procRegisterStudent;     
+
+IF OBJECT_ID('procGetAllCourses') is NOT NULL
+    DROP PROCEDURE procGetAllCourses;
+
+IF OBJECT_ID('procInsertChunk') is NOT NULL
+    DROP PROCEDURE procInsertChunk;
+
+
+
+
+
+GO
+CREATE OR ALTER PROCEDURE procGetAllCourses
+AS
+BEGIN
+    SELECT CourseID, CourseDescription
+    FROM Course;
+END;
+-- EXEC procGetAllCourses;
+
+GO
+
+CREATE OR ALTER PROCEDURE procInsertChunk
+(
+    @CourseChunk NVARCHAR(MAX),
+    @ChunkEmbedding VECTOR(1536),
+    @CourseID INT
+)
+AS
+BEGIN
+    INSERT INTO Chunks (CourseChunk, ChunkEmbedding, CourseID)
+    VALUES (@CourseChunk, @ChunkEmbedding, @CourseID);
+END;
+-- EXEC procInsertChunk @CourseChunk = 'This is a sample chunk of course description.', @ChunkEmbedding = 0x00, @CourseID = 1;
+
+-- select * from Chunks;
 
 -- Need days / times for sections, Location
 
