@@ -23,7 +23,7 @@ def create_embeddings_for_chunks():
         course_id = each_course['CourseID']
         course_description = each_course['CourseDescription']
 
-        # Generate embedding for the chunk (replace with actual embedding generation logic)
+        # Generate embedding for the chunk
         chunks_for_each_course_description = text_splitter.split_text(course_description)
         embeddings_for_chunks = embedding_model.embed_documents(chunks_for_each_course_description)
 
@@ -34,7 +34,7 @@ def create_embeddings_for_chunks():
             
 
         conn.commit()
-        print(f"Embeddings createdfor course ID: {course_id}")
+        print(f"Embeddings created for course ID: {course_id}")
 
     cursor.close()
     conn.close()

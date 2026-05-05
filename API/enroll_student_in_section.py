@@ -9,6 +9,7 @@ def enroll_student_in_section(
     cursor = conn.cursor(as_dict=True)
     cursor.execute("EXEC procEnrollStudentInSection %s, %s", (registration_id, section_id))
     rows = cursor.fetchall()
+    conn.commit()
     conn.close()
     
 

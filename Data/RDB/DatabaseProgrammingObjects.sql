@@ -39,6 +39,12 @@ IF OBJECT_ID('procGetAllCourses') is NOT NULL
 IF OBJECT_ID('procInsertChunk') is NOT NULL
     DROP PROCEDURE procInsertChunk;
 
+IF OBJECT_ID('procGetCourseRecommendationsForSelectedJob') is NOT NULL
+    DROP PROCEDURE procGetCourseRecommendationsForSelectedJob;
+
+IF OBJECT_ID('fnGetCourseRecommendationsForSelectedJob') is NOT NULL
+    DROP FUNCTION fnGetCourseRecommendationsForSelectedJob;
+
 
 
 
@@ -429,10 +435,55 @@ end;
 
 /*
 execute procValidateUser
-@username = 'mjordan@wvu.edu', 
+@username = 'mjordan@wvu.edu',
 @password = '0x01';
 
 select AppUserID, Firstname, LastName, Email, PasswordHash
 from AppUser
 */
 
+go
+
+create or alter function fnGetCourseRecommendationsForSelectedJob
+(
+    @JobDescriptionEmbedding VECTOR(1536)
+)
+returns @RecommendedCourses table
+(
+    CourseID int,
+    Evidence nvarchar(max),
+    Distance float
+)
+as
+begin
+    insert into @RecommendedCourses (CourseID, Evidence, Distance)
+    select top 5
+        CourseID,
+        MIN(CourseChunk) as Evidence,
+        MIN(VECTOR_DISTANCE('cosine', ChunkEmbedding, @JobDescriptionEmbedding)) AS Distance
+    from Chunks
+    Group by CourseID
+    Having MIN(VECTOR_DISTANCE('cosine', ChunkEmbedding, @JobDescriptionEmbedding)) <= 0.6
+    order by Distance asc;
+
+    return;
+end;
+
+go
+
+CREATE or alter PROCEDURE procGetCourseRecommendationsForSelectedJob
+(
+    @JobDescription vector(1536),
+    @semester nvarchar(12) = null,
+    @year int = null
+)
+as
+BEGIN
+    SELECT c.courseID, Evidence, Distance, Title, SubjectCode, CourseNumber, CourseDescription, SectionID, CRN, SectionNumber, SectionSemester, SectionYear, RemainingOpenings
+    FROM dbo.fnGetCourseRecommendationsForSelectedJob(@JobDescription) AS F
+    JOIN Course C on F.CourseID = C.CourseID
+    join Section S on C.CourseID = S.CourseID
+    where S.SectionSemester = IsNull(@semester, S.SectionSemester)
+    and S.SectionYear = IsNull(@year, S.SectionYear)
+    order by Distance ASC;
+END;

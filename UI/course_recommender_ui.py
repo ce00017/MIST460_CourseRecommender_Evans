@@ -1,10 +1,12 @@
 import streamlit as st
+from UI.get_course_recommendations_for_selected_job_ui import get_course_recommendations_for_selected_job_ui
 from get_course_sections_for_specified_course_ui import get_course_sections_for_specified_course_ui
 from get_course_prerequisites_ui import get_course_prerequisites_ui
 from validate_user_ui import validate_user_ui
 from has_student_met_prerequisites_for_course_ui import has_student_met_prerequisites_for_course_ui
 from register_student_ui import register_student_ui
 from enroll_student_in_section_ui import enroll_student_in_section_ui
+from get_course_recommendations_for_selected_job_ui import get_course_recommendations_for_selected_job_ui
 
 with st.sidebar:
     st.title("Course Recommender System")
@@ -18,7 +20,8 @@ with st.sidebar:
             "Validate User",
             "Has Student Met Prerequisites for Course",
             "Register Student",
-            "Enroll Student in Section"
+            "Enroll Student in Section",
+            "Get Course Recommendations for Selected Job"
         )
     )
 
@@ -39,3 +42,6 @@ elif api_end_point == "Register Student":
 
 elif api_end_point == "Enroll Student in Section":
     enroll_student_in_section_ui()  
+
+elif api_end_point == "Get Course Recommendations for Selected Job":
+    get_course_recommendations_for_selected_job_ui()
