@@ -8,6 +8,7 @@ from has_student_met_prerequisites_for_course import has_student_met_prerequisit
 from register_student import register_student
 from enroll_student_in_section import enroll_student_in_section
 from get_course_recommendations_for_selected_job import get_course_recommendations_for_selected_job
+from get_all_jobs import get_all_jobs
 
 app = FastAPI()
 
@@ -37,5 +38,8 @@ def enroll_student_in_section_endpoint(registration_id: str, section_id: str):
 
 @app.get("/get_course_recommendations_for_selected_job")
 def get_course_recommendations_for_selected_job_endpoint(job_description: str):
-    from get_course_recommendations_for_selected_job import get_course_recommendations_for_selected_job
     return get_course_recommendations_for_selected_job(job_description)
+
+@app.get("/get_all_jobs")
+def get_all_jobs_endpoint():
+    return get_all_jobs()

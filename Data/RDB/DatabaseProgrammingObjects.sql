@@ -45,6 +45,9 @@ IF OBJECT_ID('procGetCourseRecommendationsForSelectedJob') is NOT NULL
 IF OBJECT_ID('fnGetCourseRecommendationsForSelectedJob') is NOT NULL
     DROP FUNCTION fnGetCourseRecommendationsForSelectedJob;
 
+IF OBJECT_ID('procGetAllJobs') is NOT NULL
+    DROP PROCEDURE procGetAllJobs;
+
 
 
 
@@ -487,3 +490,14 @@ BEGIN
     and S.SectionYear = IsNull(@year, S.SectionYear)
     order by Distance ASC;
 END;
+
+GO
+
+CREATE OR ALTER PROCEDURE procGetAllJobs
+AS
+BEGIN
+    SELECT JobID, JobTitle, Industry, JobDescription
+    FROM Job
+    ORDER BY JobTitle;
+END;
+-- EXEC procGetAllJobs;
